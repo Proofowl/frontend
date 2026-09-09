@@ -1,38 +1,390 @@
-/* Base reset only. Design tokens land in a later commit (styles/tokens.css). */
+/* =========================================================================
+   ProofOwl frontend — design tokens + base
+   -------------------------------------------------------------------------
+   Identity: an owl, watchful; verification and trust. The reference is
+   this ecosystem's own tooling surface — markdown docs, CI badges,
+   monospaced hashes, an instrument panel rather than a marketing site.
+   Restrained: 1px rules, low radii, no decorative gradients or shadows.
+   A single amber accent stands in for the owl's eye / a signal lamp.
+   Dark by default; light palette via prefers-color-scheme and an explicit
+   [data-theme] override the header toggle sets.
+   ========================================================================= */
+
+:root {
+  /* ---- dark (default) ---- */
+  --bg: #0c0e11;
+  --bg-raised: #14171c;
+  --bg-sunken: #090a0c;
+  --border: #262b33;
+  --border-strong: #39414d;
+  --text: #e9e6dd;
+  --text-muted: #9aa0ab;
+  --text-faint: #6b7280;
+
+  --accent: #e8b84b; /* owl-eye amber */
+  --accent-ink: #1a1204; /* text on --accent */
+  --accent-dim: #b98f2f;
+
+  --verified: #58c9a3; /* pr_hash recomputes → matches */
+  --verified-bg: rgba(88, 201, 163, 0.1);
+  --warn: #e0a458;
+  --warn-bg: rgba(224, 164, 88, 0.1);
+  --danger: #d98b6d;
+  --danger-bg: rgba(217, 139, 109, 0.1);
+  --info-bg: rgba(232, 184, 75, 0.08);
+
+  --focus: #7db2e8;
+
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono:
+    ui-monospace, "SF Mono", "SFMono-Regular", "JetBrains Mono", "Fira Code", "DejaVu Sans Mono",
+    Menlo, Consolas, monospace;
+
+  --radius: 4px;
+  --radius-lg: 8px;
+  --rule: 1px solid var(--border);
+  --maxw: 60rem;
+  --maxw-prose: 44rem;
+
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f6f3ea;
+    --bg-raised: #fffdf7;
+    --bg-sunken: #ece7d8;
+    --border: #ddd6c4;
+    --border-strong: #c3b998;
+    --text: #23201a;
+    --text-muted: #5c574c;
+    --text-faint: #8a8474;
+
+    --accent: #b5851b;
+    --accent-ink: #fffdf7;
+    --accent-dim: #8f6913;
+
+    --verified: #2f8f70;
+    --verified-bg: rgba(47, 143, 112, 0.12);
+    --warn: #9a6a1f;
+    --warn-bg: rgba(154, 106, 31, 0.12);
+    --danger: #a4512f;
+    --danger-bg: rgba(164, 81, 47, 0.1);
+    --info-bg: rgba(181, 133, 27, 0.09);
+
+    --focus: #2f6fb0;
+    color-scheme: light;
+  }
+}
+
+:root[data-theme="light"] {
+  --bg: #f6f3ea;
+  --bg-raised: #fffdf7;
+  --bg-sunken: #ece7d8;
+  --border: #ddd6c4;
+  --border-strong: #c3b998;
+  --text: #23201a;
+  --text-muted: #5c574c;
+  --text-faint: #8a8474;
+  --accent: #b5851b;
+  --accent-ink: #fffdf7;
+  --accent-dim: #8f6913;
+  --verified: #2f8f70;
+  --verified-bg: rgba(47, 143, 112, 0.12);
+  --warn: #9a6a1f;
+  --warn-bg: rgba(154, 106, 31, 0.12);
+  --danger: #a4512f;
+  --danger-bg: rgba(164, 81, 47, 0.1);
+  --info-bg: rgba(181, 133, 27, 0.09);
+  --focus: #2f6fb0;
+  color-scheme: light;
+}
+
+/* ---- reset ---- */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
-
-html,
-body {
+* {
   margin: 0;
-  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  min-height: 100vh;
-  font-family:
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    "Segoe UI",
-    Roboto,
-    Helvetica,
-    Arial,
-    sans-serif;
-  line-height: 1.6;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.62;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-a {
-  color: inherit;
-}
-
 img,
 svg {
-  max-width: 100%;
   display: block;
+  max-width: 100%;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  text-underline-offset: 3px;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  line-height: 1.2;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+h1 {
+  font-size: clamp(1.9rem, 1.4rem + 2vw, 2.7rem);
+}
+h2 {
+  font-size: clamp(1.35rem, 1.1rem + 1vw, 1.6rem);
+}
+h3 {
+  font-size: 1.12rem;
+}
+
+code,
+kbd,
+samp {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+}
+
+hr {
+  border: none;
+  border-top: var(--rule);
+}
+
+/* ---- layout primitives ---- */
+.container {
+  width: 100%;
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 0.5rem + 2.5vw, 2rem);
+}
+
+.stack > * + * {
+  margin-top: var(--stack-gap, 1rem);
+}
+.stack-lg > * + * {
+  margin-top: 2rem;
+}
+.stack-sm > * + * {
+  margin-top: 0.5rem;
+}
+
+.cluster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.grid-2 {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+}
+
+/* ---- text helpers ---- */
+.mono {
+  font-family: var(--font-mono);
+}
+.muted {
+  color: var(--text-muted);
+}
+.faint {
+  color: var(--text-faint);
+}
+.label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.lede {
+  font-size: 1.15rem;
+  color: var(--text-muted);
+}
+.prose {
+  max-width: var(--maxw-prose);
+}
+.prose p + p {
+  margin-top: 0.9rem;
+}
+.prose h2 {
+  margin-top: 2.4rem;
+}
+.prose h3 {
+  margin-top: 1.6rem;
+}
+.prose ul {
+  margin-top: 0.6rem;
+  padding-left: 1.2rem;
+}
+.prose li + li {
+  margin-top: 0.35rem;
+}
+.break-all {
+  word-break: break-all;
+}
+
+/* ---- surfaces ---- */
+.card {
+  background: var(--bg-raised);
+  border: var(--rule);
+  border-radius: var(--radius-lg);
+  padding: clamp(1rem, 0.7rem + 1.2vw, 1.5rem);
+}
+.card--sunken {
+  background: var(--bg-sunken);
+}
+
+/* ---- callouts ---- */
+.callout {
+  border: var(--rule);
+  border-left-width: 3px;
+  border-radius: var(--radius);
+  padding: 0.9rem 1rem;
+  background: var(--info-bg);
+  border-left-color: var(--accent);
+}
+.callout--warn {
+  background: var(--warn-bg);
+  border-left-color: var(--warn);
+}
+.callout--danger {
+  background: var(--danger-bg);
+  border-left-color: var(--danger);
+}
+.callout--muted {
+  background: var(--bg-sunken);
+  border-left-color: var(--border-strong);
+}
+
+/* ---- pills ---- */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.pill--verified {
+  color: var(--verified);
+  border-color: var(--verified);
+  background: var(--verified-bg);
+}
+.pill--warn {
+  color: var(--warn);
+  border-color: var(--warn);
+  background: var(--warn-bg);
+}
+.pill--accent {
+  color: var(--accent);
+  border-color: var(--accent-dim);
+  background: var(--info-bg);
+}
+
+/* ---- buttons / inputs ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font: inherit;
+  font-weight: 600;
+  padding: 0.6rem 1.1rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-strong);
+  background: var(--bg-raised);
+  color: var(--text);
+  cursor: pointer;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease;
+}
+.btn:hover {
+  border-color: var(--accent-dim);
+  text-decoration: none;
+}
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.btn--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+.btn--ghost {
+  background: transparent;
+}
+.btn--sm {
+  padding: 0.35rem 0.7rem;
+  font-size: 0.85rem;
+}
+
+.field {
+  width: 100%;
+  font: inherit;
+  padding: 0.65rem 0.8rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-strong);
+  background: var(--bg-sunken);
+  color: var(--text);
+  font-family: var(--font-mono);
+}
+.field::placeholder {
+  color: var(--text-faint);
+}
+
+/* ---- misc ---- */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.scroll-x {
+  overflow-x: auto;
 }
