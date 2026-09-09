@@ -92,13 +92,14 @@ Attestation submission and the attestor key live in
   `NormalModuleReplacementPlugin` for the `node:` scheme and a
   `ProvidePlugin` for `Buffer`. Proven with a live read by
   `npm run smoke` (below).
-- **Decode shim:** `@stellar/stellar-sdk` 16.x mis-decodes the v0.3
-  `Attestation` struct (`ScSpecType scSpecTypeU64 …`).
-  `src/lib/chain/attestationDecode.ts` is a verbatim port of
-  proofowl-backend’s `src/chain/attestationDecode.ts` — it keeps the
-  SDK’s generated client for the RPC round-trip and swaps only the final
-  ScVal→JS step for `scValToNative`. Remove it when the SDK bumps
-  `@stellar/stellar-sdk`.
+- **Attestation decode:** `@proofowl/contract-sdk@0.3.0` decodes the
+  v0.3 `Attestation` struct correctly itself
+  (`getAttestation` / `getAttestationsPage` use `scValToNative`
+  internally), so `src/lib/chain/passport.ts` calls the SDK client
+  directly. The consumer-side `attestationDecode.ts` shim this repo used
+  to carry (a port of proofowl-backend’s, around the
+  `@stellar/stellar-sdk` 16.x `ScSpecType scSpecTypeU64` bug) has been
+  removed.
 - **Canonical hashing** (`src/lib/hashing/identifiers.ts`) is a verbatim
   port of proofowl-backend’s module and is pinned against both the
   `identifier-spec-v1` vectors and the SDK’s own exports in
@@ -112,7 +113,7 @@ Attestation submission and the attestor key live in
 | `npm run build`     | Production build.                                                                                                                                                                                                                           |
 | `npm run lint`      | `eslint .`                                                                                                                                                                                                                                  |
 | `npm run typecheck` | `tsc --noEmit`                                                                                                                                                                                                                              |
-| `npm test`          | Vitest — the framework-free logic modules (hashing, decode, resolution).                                                                                                                                                                    |
+| `npm test`          | Vitest — the framework-free logic modules (hashing, chain reads, resolution).                                                                                                                                                               |
 | `npm run check`     | `format:check` + `lint` + `typecheck` + `test`.                                                                                                                                                                                             |
 | `npm run smoke`     | **Local only.** Starts the dev server, opens `/passport/<demo wallet>` in headless Chrome, asserts the live reputation score renders as `50`. Needs a Chrome binary (`CHROME_PATH` to override); skips cleanly without one. Not part of CI. |
 
