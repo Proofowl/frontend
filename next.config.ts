@@ -22,9 +22,13 @@ import type { NextConfig } from "next";
  * shim exposing just `createHash("sha256")`, backed by `@noble/hashes`
  * (already in the tree via @stellar/stellar-sdk).
  *
- * NOT needed (confirmed by the investigation, re-confirmed here): Buffer
- * / process / stream polyfills — the SDK's generated bindings import the
- * userland `buffer` package and self-install `window.Buffer`.
+ * One difference from the investigation's Vite result: a `Buffer`
+ * global IS needed here. The Vite probe only ever loaded Buffer.* via
+ * the SDK barrel, whose generated bindings self-install `window.Buffer`.
+ * This app also imports the ported hashing module (which uses
+ * `Buffer.from`) on its own, before any SDK code runs — e.g. on the
+ * passport search page — so webpack's ProvidePlugin supplies `Buffer`
+ * from the userland `buffer` package for the client build.
  */
 const sha256Shim = path.resolve(import.meta.dirname, "src/lib/hashing/sha256-browser.ts");
 
@@ -45,6 +49,9 @@ const nextConfig: NextConfig = {
             resource.request = sha256Shim;
           },
         ),
+        new webpack.ProvidePlugin({
+          Buffer: ["buffer", "Buffer"],
+        }),
       );
     }
     return config;

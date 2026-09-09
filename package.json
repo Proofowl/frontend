@@ -27,6 +27,7 @@
     "@noble/hashes": "^1.7.1",
     "@proofowl/contract-sdk": "file:../proofowl-contracts/sdk/typescript",
     "@stellar/stellar-sdk": "^16.0.1",
+    "buffer": "^6.0.3",
     "next": "^15.5.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
