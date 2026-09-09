@@ -13,9 +13,9 @@
  * and (for "view my passport") asks a wallet extension for its public
  * address. See README "Security".
  *
- * Defaults, re-confirmed live from ../proofowl-contracts on 2026-09-09:
- *  - contract id  : README "Deployed contracts" table, v0.3 row (crate 0.3.0)
- *  - rpc / passphrase : docs/testnet/phase2-v0.3-alpha.md "Network target"
+ * Defaults, from the proofowl-contracts repo (confirmed 2026-09-09):
+ *  - contract id  : its README "Deployed contracts" table, v0.3 row (crate 0.3.0)
+ *  - rpc / passphrase : its docs/testnet/phase2-v0.3-alpha.md "Network target"
  */
 
 // Type only — erased at build time. Importing a VALUE from
