@@ -1,21 +1,133 @@
 # proofowl-frontend
 
-Passport lookup, wallet-linking UI, and the explainer/landing page for the
-[ProofOwl](https://github.com/Proofowl/proofowl-contracts) on-chain
-contributor-reputation registry.
+A **read-only** web explorer for [ProofOwl](https://github.com/Proofowl/proofowl-contracts) —
+the on-chain contributor-reputation registry. It simulates contract
+reads and, for “view my passport”, asks a wallet extension for its
+public address. **It never signs or submits anything.**
 
-**Status: pre-implementation.** No application code exists yet. This repo
-currently holds only a grounding/investigation record — real technical
-facts confirmed against the live testnet contract, the TypeScript SDK, and
-current Soroban wallet tooling — that must be settled before any UI is
-scaffolded.
+Built with Next.js (App Router) + TypeScript.
 
-See [`docs/investigation/`](./docs/investigation/):
+## What ships in this version
 
-| Doc                                                                                   | Question it answers                                                                            |
-| ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| [`00-overview.md`](./docs/investigation/00-overview.md)                               | Scope, method, the hard facts in one page                                                      |
-| [`01-grounding.md`](./docs/investigation/01-grounding.md)                             | What the contracts + backend repos actually say                                                |
-| [`02-browser-sdk-proof.md`](./docs/investigation/02-browser-sdk-proof.md)             | Does `@proofowl/contract-sdk` run in a browser? (proven, not inferred)                         |
-| [`03-wallet-connection.md`](./docs/investigation/03-wallet-connection.md)             | Current Soroban wallet-connect standard, and whether it can sign a contract invocation         |
-| [`04-leaderboard-feasibility.md`](./docs/investigation/04-leaderboard-feasibility.md) | Does testnet RPC retain events far enough back for a leaderboard? Real observed data + options |
+| Route                | What it is                                                                                                    |
+| -------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `/`                  | Landing / explainer — the problem, the solution, the trust boundaries (substance from the contracts README).  |
+| `/passport`          | Search by wallet address **or** GitHub handle. A handle is resolved to its numeric id and hashed client-side. |
+| `/passport/[wallet]` | Reputation score, attestation count, current linked identity, and the full paginated attestation history.     |
+| `/leaderboard`       | An honest “not available yet” — no sample data. Explains what a real leaderboard needs.                       |
+| `/link`              | How the two-party linking flow works, in plain language, with links to the CLI flow in proofowl-backend.      |
+
+**Deliberately excluded from this version:** any interactive
+wallet-linking submission flow (it needs the attestor’s co-signature,
+which only the backend can provide), and any real leaderboard (it needs
+a standing event-indexing service that does not exist yet). There are no
+stubs that look functional but aren’t.
+
+## Prerequisites — this repo does not build standalone yet
+
+> **The contract SDK is a local `file:` dependency.**
+> `package.json` has
+> `"@proofowl/contract-sdk": "file:../proofowl-contracts/sdk/typescript"`.
+> `@proofowl/contract-sdk` is `"private": true` and **not published to
+> npm**. So this project **only builds on a machine where
+> `../proofowl-contracts` is checked out next to it and its SDK is
+> built.**
+
+```sh
+# from the directory that contains proofowl-frontend/
+git clone https://github.com/Proofowl/proofowl-contracts
+cd proofowl-contracts/sdk/typescript
+npm ci
+npm run build          # produces dist/, which the file: dep points at
+cd ../../../proofowl-frontend
+```
+
+> **A live deployment (e.g. Vercel) is blocked** on a separate, upcoming
+> task to publish `@proofowl/contract-sdk` to npm. Until that happens
+> there is no way to `npm install` this project without the sibling
+> checkout, and it is **not** deploy-ready. Do not treat it as such.
+
+## Setup
+
+Node **≥ 22.6** (CI uses 24 — see `.nvmrc`).
+
+```sh
+npm ci
+npm run dev            # http://localhost:3000
+```
+
+Zero `.env` is required — `src/lib/config.ts` ships working testnet
+defaults (v0.3 contract `CAIDTSVP…`, `soroban-testnet.stellar.org`,
+re-confirmed live from `../proofowl-contracts` on 2026-09-09). To point
+at a different instance, copy `.env.example` to `.env.local` and edit.
+
+## Configuration — public values only
+
+`.env.example` documents three `NEXT_PUBLIC_*` vars: the contract id, the
+RPC URL, the network passphrase. **Every one is public** and safe both to
+commit and to ship to the browser (the `NEXT_PUBLIC_` prefix does the
+latter, which is correct here — on-chain reads run client-side). The
+mainnet passphrase is rejected at startup; this is a testnet explorer.
+
+## Security — no private key, ever
+
+**This repo must never contain a private key of any kind** — no
+`ATTESTOR_SECRET_KEY`, no wallet seed phrase, no keystore file.
+
+- It is a **public, client-side app**. Anything it holds is shipped to
+  every visitor’s browser.
+- It has **no server-side signing path** — nothing here builds, signs,
+  or submits a transaction or a Soroban auth entry. An ESLint rule
+  (`no-restricted-syntax` in `eslint.config.mjs`) bans the wallet
+  `signTransaction` / `signAuthEntry` / `signMessage` /
+  `signAndSubmitTransaction` identifiers project-wide, so a signing flow
+  cannot be added by accident.
+- The only wallet interaction is `connectForAddress()` in
+  `src/lib/wallet/connect.ts`, which calls the wallet kit’s `init` /
+  `authModal` / `getAddress` and reads the connected **public address**
+  and nothing else.
+
+Attestation submission and the attestor key live in
+[proofowl-backend](https://github.com/Proofowl/backend), never here.
+
+## How it talks to the chain
+
+- **Reads run in the browser** via `@proofowl/contract-sdk`’s
+  `createReadClient` (see `docs/investigation/02-browser-sdk-proof.md`).
+- **Bundler shim:** the SDK barrel pulls in `identifiers.ts`’s
+  `import { createHash } from "node:crypto"`, and this app’s own ported
+  hashing module does the same. `next.config.ts` aliases `node:crypto`
+  (client build only) to `src/lib/hashing/sha256-browser.ts`, a ~40-line
+  `createHash("sha256")` over `@noble/hashes`, plus a
+  `NormalModuleReplacementPlugin` for the `node:` scheme and a
+  `ProvidePlugin` for `Buffer`. Proven with a live read by
+  `npm run smoke` (below).
+- **Decode shim:** `@stellar/stellar-sdk` 16.x mis-decodes the v0.3
+  `Attestation` struct (`ScSpecType scSpecTypeU64 …`).
+  `src/lib/chain/attestationDecode.ts` is a verbatim port of
+  proofowl-backend’s `src/chain/attestationDecode.ts` — it keeps the
+  SDK’s generated client for the RPC round-trip and swaps only the final
+  ScVal→JS step for `scValToNative`. Remove it when the SDK bumps
+  `@stellar/stellar-sdk`.
+- **Canonical hashing** (`src/lib/hashing/identifiers.ts`) is a verbatim
+  port of proofowl-backend’s module and is pinned against both the
+  `identifier-spec-v1` vectors and the SDK’s own exports in
+  `src/lib/hashing/identifiers.test.ts`.
+
+## Scripts
+
+| Command             | What it does                                                                                                                                                                                                                                |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run dev`       | Next dev server.                                                                                                                                                                                                                            |
+| `npm run build`     | Production build.                                                                                                                                                                                                                           |
+| `npm run lint`      | `eslint .`                                                                                                                                                                                                                                  |
+| `npm run typecheck` | `tsc --noEmit`                                                                                                                                                                                                                              |
+| `npm test`          | Vitest — the framework-free logic modules (hashing, decode, resolution).                                                                                                                                                                    |
+| `npm run check`     | `format:check` + `lint` + `typecheck` + `test`.                                                                                                                                                                                             |
+| `npm run smoke`     | **Local only.** Starts the dev server, opens `/passport/<demo wallet>` in headless Chrome, asserts the live reputation score renders as `50`. Needs a Chrome binary (`CHROME_PATH` to override); skips cleanly without one. Not part of CI. |
+
+## Grounding
+
+`docs/investigation/00-04` — the technical facts this build rests on
+(browser-SDK proof, wallet tooling, event-retention findings), confirmed
+against the live testnet contract before any UI was written.
