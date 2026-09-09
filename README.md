@@ -23,43 +23,33 @@ which only the backend can provide), and any real leaderboard (it needs
 a standing event-indexing service that does not exist yet). There are no
 stubs that look functional but aren’t.
 
-## Prerequisites — this repo does not build standalone yet
-
-> **The contract SDK is a local `file:` dependency.**
-> `package.json` has
-> `"@proofowl/contract-sdk": "file:../proofowl-contracts/sdk/typescript"`.
-> `@proofowl/contract-sdk` is `"private": true` and **not published to
-> npm**. So this project **only builds on a machine where
-> `../proofowl-contracts` is checked out next to it and its SDK is
-> built.**
-
-```sh
-# from the directory that contains proofowl-frontend/
-git clone https://github.com/Proofowl/proofowl-contracts
-cd proofowl-contracts/sdk/typescript
-npm ci
-npm run build          # produces dist/, which the file: dep points at
-cd ../../../proofowl-frontend
-```
-
-> **A live deployment (e.g. Vercel) is blocked** on a separate, upcoming
-> task to publish `@proofowl/contract-sdk` to npm. Until that happens
-> there is no way to `npm install` this project without the sibling
-> checkout, and it is **not** deploy-ready. Do not treat it as such.
-
 ## Setup
 
-Node **≥ 22.6** (CI uses 24 — see `.nvmrc`).
+No sibling checkout, no local SDK build. `@proofowl/contract-sdk` is a
+normal npm dependency (`^0.3.0`, published to the public registry), so a
+single install is all it takes:
 
 ```sh
 npm ci
 npm run dev            # http://localhost:3000
 ```
 
+Node **≥ 22.6** (CI uses 24).
+
 Zero `.env` is required — `src/lib/config.ts` ships working testnet
-defaults (v0.3 contract `CAIDTSVP…`, `soroban-testnet.stellar.org`,
-re-confirmed live from `../proofowl-contracts` on 2026-09-09). To point
-at a different instance, copy `.env.example` to `.env.local` and edit.
+defaults (v0.3 contract `CAIDTSVP…`, `soroban-testnet.stellar.org`). To
+point at a different instance, copy `.env.example` to `.env.local` and
+edit.
+
+## Deployment
+
+This repo is now deployable. The earlier blocker — `@proofowl/contract-sdk`
+was a `file:` path to a sibling folder that does not exist in a hosted
+build environment — is gone now that the SDK installs from npm; `npm ci`
+
+- `next build` runs anywhere. **Standing up the actual Vercel project
+  (import, env, domain) is a separate task; this repo only removes the
+  blocker.**
 
 ## Configuration — public values only
 
