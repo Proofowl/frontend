@@ -44,12 +44,12 @@ edit.
 ## Deployment
 
 This repo is now deployable. The earlier blocker — `@proofowl/contract-sdk`
-was a `file:` path to a sibling folder that does not exist in a hosted
-build environment — is gone now that the SDK installs from npm; `npm ci`
+was a `file:` path to a sibling folder absent from a hosted build
+environment — is gone now that the SDK installs from npm. A plain
+`npm ci` followed by `next build` runs anywhere.
 
-- `next build` runs anywhere. **Standing up the actual Vercel project
-  (import, env, domain) is a separate task; this repo only removes the
-  blocker.**
+**Standing up the actual Vercel project (import, env vars, domain) is a
+separate task; this change only removes the blocker.**
 
 ## Configuration — public values only
 
