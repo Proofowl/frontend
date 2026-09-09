@@ -10,8 +10,10 @@
  *     in identifiers.ts's `import { createHash } from "node:crypto"`, so
  *     without the shim this page would not run in the browser at all;
  *   - `createReadClient` reading the live testnet contract from the
- *     browser;
- *   - the ported scValToNative decode shim, via the attestation history.
+ *     browser (`@proofowl/contract-sdk`, npm-installed — no sibling
+ *     checkout);
+ *   - the SDK's own `getAttestationsPage` decode, via the attestation
+ *     history (no consumer-side decode shim as of SDK 0.3.0).
  *
  * This is a LOCAL check (needs a Chrome binary); it is not part of CI.
  * Skips cleanly if no Chrome is found. Set CHROME_PATH to override.
@@ -106,8 +108,8 @@ try {
     return el?.querySelector(".stat__value")?.textContent?.trim();
   });
 
-  // Give the decode-shim history read a moment to resolve, then record
-  // whether it rendered a row or an error (both prove the shim ran).
+  // Give the history read a moment to resolve, then record whether it
+  // rendered a row or an error (both prove the SDK read path ran).
   await page
     .waitForFunction(
       () => document.querySelector(".attn-list li") || document.querySelector(".callout--danger"),
@@ -125,14 +127,14 @@ try {
 
   console.log(`smoke: /passport/${WALLET.slice(0, 8)}… rendered reputation score = ${score}`);
   console.log(
-    `smoke: attestation history (decode shim) = ${JSON.stringify(historyText.replace(/\s+/g, " ").slice(0, 160))}`,
+    `smoke: attestation history = ${JSON.stringify(historyText.replace(/\s+/g, " ").slice(0, 160))}`,
   );
 
   if (score !== EXPECTED_SCORE) {
     failed = true;
     console.error(`smoke: FAIL — expected reputation score ${EXPECTED_SCORE}, got ${score}`);
   } else {
-    console.log("smoke: PASS — live browser read via the shimmed SDK returned the expected value.");
+    console.log("smoke: PASS — live browser read via the npm-installed SDK returned the expected value.");
   }
   if (consoleErrors.length) {
     console.error("smoke: page errors:\n" + consoleErrors.join("\n"));
