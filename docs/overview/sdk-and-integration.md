@@ -123,3 +123,7 @@ The frontend still needs its **browser** bundler shim for `node:crypto`
 (`next.config.ts` → `src/lib/hashing/sha256-browser.ts`) — that is a
 Webpack-for-the-browser concern, not the decode bug, and it stays. The
 backend runs on Node and needs no such shim.
+
+---
+
+↑ [Project overview](./README.md) · [contracts](./contracts.md) · [backend](./backend.md) · [frontend](./frontend.md) · [SDK & integration](./sdk-and-integration.md) · [data-flow walkthrough](./data-flow-walkthrough.md) · [roadmap / status](./roadmap-status.md) · [known limitations](./known-limitations.md) · [glossary](./glossary.md)

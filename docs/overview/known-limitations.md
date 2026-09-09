@@ -121,3 +121,7 @@ other or with reality. Flagged here rather than papered over.
    `github.com/Proofowl/backend` (the actual repo, used by the SDK
    README and the frontend). The real repo is
    [`Proofowl/backend`](https://github.com/Proofowl/backend).
+
+---
+
+↑ [Project overview](./README.md) · [contracts](./contracts.md) · [backend](./backend.md) · [frontend](./frontend.md) · [SDK & integration](./sdk-and-integration.md) · [data-flow walkthrough](./data-flow-walkthrough.md) · [roadmap / status](./roadmap-status.md) · [known limitations](./known-limitations.md) · [glossary](./glossary.md)

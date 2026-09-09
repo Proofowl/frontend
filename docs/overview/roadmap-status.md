@@ -63,3 +63,7 @@ Phase 3 does **not** include mainnet; Gate 6 above is unchanged.
 
 See [`known-limitations.md`](./known-limitations.md) for the itemized
 open-limitations list and the cross-repo inconsistencies.
+
+---
+
+↑ [Project overview](./README.md) · [contracts](./contracts.md) · [backend](./backend.md) · [frontend](./frontend.md) · [SDK & integration](./sdk-and-integration.md) · [data-flow walkthrough](./data-flow-walkthrough.md) · [roadmap / status](./roadmap-status.md) · [known limitations](./known-limitations.md) · [glossary](./glossary.md)

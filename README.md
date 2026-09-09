@@ -7,6 +7,9 @@ public address. **It never signs or submits anything.**
 
 Built with Next.js (App Router) + TypeScript.
 
+**New to ProofOwl?** Start with [`docs/overview/`](./docs/overview/README.md) —
+what ProofOwl is as a whole and how its three repos relate.
+
 ## What ships in this version
 
 | Route                | What it is                                                                                                    |

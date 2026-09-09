@@ -187,3 +187,7 @@ Separate from the decode shim, and still present in this frontend:
 `src/lib/hashing/sha256-browser.ts` because the SDK barrel and this
 repo's ported hashing module both `import { createHash } from "node:crypto"`,
 which Webpack cannot bundle for the browser. Proven by `npm run smoke`.
+
+---
+
+↑ [Project overview](./README.md) · [contracts](./contracts.md) · [backend](./backend.md) · [frontend](./frontend.md) · [SDK & integration](./sdk-and-integration.md) · [data-flow walkthrough](./data-flow-walkthrough.md) · [roadmap / status](./roadmap-status.md) · [known limitations](./known-limitations.md) · [glossary](./glossary.md)

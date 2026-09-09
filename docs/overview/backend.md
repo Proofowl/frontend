@@ -200,3 +200,7 @@ the pipeline, and the read-only API all exist and are tested. Nothing
 runs unattended, nothing writes over HTTP, and there is no OAuth flow.
 One full end-to-end run is on record — see
 [`data-flow-walkthrough.md`](./data-flow-walkthrough.md).
+
+---
+
+↑ [Project overview](./README.md) · [contracts](./contracts.md) · [backend](./backend.md) · [frontend](./frontend.md) · [SDK & integration](./sdk-and-integration.md) · [data-flow walkthrough](./data-flow-walkthrough.md) · [roadmap / status](./roadmap-status.md) · [known limitations](./known-limitations.md) · [glossary](./glossary.md)
