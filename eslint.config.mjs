@@ -5,6 +5,7 @@
 // React app and those are not relevant in the other two.
 
 import js from "@eslint/js";
+import globals from "globals";
 import tseslint from "typescript-eslint";
 import nextPlugin from "@next/eslint-plugin-next";
 import reactHooks from "eslint-plugin-react-hooks";
@@ -15,6 +16,13 @@ export default tseslint.config(
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
+  {
+    // Node scripts + config files: Node globals, plain JS.
+    files: ["scripts/**/*.{mjs,js}", "*.config.{ts,mjs,js}", "vitest.config.ts"],
+    // Node script; smoke.mjs also has page.evaluate() callbacks that run
+    // in the browser, so allow both global sets here.
+    languageOptions: { globals: { ...globals.node, ...globals.browser } },
+  },
   {
     plugins: {
       "@next/next": nextPlugin,
