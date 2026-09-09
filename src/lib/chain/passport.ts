@@ -1,19 +1,23 @@
 /**
- * High-level passport reads, composed from the SDK read client and the
- * attestation-decode shim. Everything here is a read-only simulation
- * against the configured contract; see contract-api-v2 §7 "Building a
- * passport" for the shape this follows.
+ * High-level passport reads, composed from the SDK read client.
+ * Everything here is a read-only simulation against the configured
+ * contract; see contract-api-v2 §7 "Building a passport" for the shape
+ * this follows.
+ *
+ * As of `@proofowl/contract-sdk@0.3.0` the client's
+ * `getAttestation` / `getAttestationsPage` decode the `Attestation`
+ * struct correctly on their own (via `scValToNative`), so this module
+ * calls them directly — no consumer-side decode shim.
  */
 
-import { MAX_PAGE_SIZE } from "@proofowl/contract-sdk";
+import { MAX_PAGE_SIZE, isPageStartOutOfRange, type AttestationView } from "@proofowl/contract-sdk";
 
 import { bytesToHex } from "@/lib/hashing";
 import { assertStellarWalletAddress } from "@/lib/hashing/identifiers";
-import { decodeAttestationsPage, type AttestationRecord } from "./attestationDecode";
-import { getRawClient, getReadClient } from "./readClient";
+import { getReadClient } from "./readClient";
 
 export { MAX_PAGE_SIZE };
-export type { AttestationRecord };
+export type { AttestationView };
 
 export interface PassportSummary {
   wallet: string;
@@ -47,16 +51,16 @@ export async function fetchPassportSummary(walletInput: string): Promise<Passpor
 }
 
 export interface AttestationPage {
-  records: AttestationRecord[];
+  records: AttestationView[];
   /** Zero-based index to pass as the next `cursor`, or `null` at the end. */
   nextCursor: number | null;
 }
 
 /**
- * One bounded page of a wallet's attestation history (oldest first),
- * decoded via the shim. `cursor` is a zero-based start index; `limit`
- * is clamped to `1..=MAX_PAGE_SIZE`. `cursor` at or past the end yields
- * an empty page rather than an error.
+ * One bounded page of a wallet's attestation history (oldest first).
+ * `cursor` is a zero-based start index; `limit` is clamped to
+ * `1..=MAX_PAGE_SIZE`. `cursor` at or past the end yields an empty page
+ * rather than an error.
  */
 export async function fetchAttestationPage(
   walletInput: string,
@@ -67,14 +71,15 @@ export async function fetchAttestationPage(
   const start = Number.isInteger(cursor) && cursor > 0 ? cursor : 0;
   const size = Math.min(Math.max(Math.trunc(limit) || MAX_PAGE_SIZE, 1), MAX_PAGE_SIZE);
 
-  let records: AttestationRecord[];
+  let records: AttestationView[];
   try {
-    records = await decodeAttestationsPage(getRawClient(), wallet, start, size);
+    records = await getReadClient().getAttestationsPage(wallet, start, size);
   } catch (err) {
-    // `start` past the wallet's count is `PageStartOutOfRange` (13) — the
-    // shim surfaces it as `...Error(Contract, #13)`. Treat "asked past
-    // the end" as an empty page; re-throw anything else.
-    if (err instanceof Error && /Error\(Contract,\s*#13\)/.test(err.message)) {
+    // `start` strictly past the wallet's count is `PageStartOutOfRange`
+    // (#13); the SDK surfaces it so `isPageStartOutOfRange` recognises
+    // it. Treat "asked past the end" as an empty page; re-throw anything
+    // else. (`start === count` is not an error — the SDK returns `[]`.)
+    if (isPageStartOutOfRange(err)) {
       return { records: [], nextCursor: null };
     }
     throw err;
@@ -85,6 +90,6 @@ export async function fetchAttestationPage(
 }
 
 /** PR URL rebuilt from an attestation's cleartext fields (identifier-spec §2.6). */
-export function attestationPrUrl(record: Pick<AttestationRecord, "repo" | "prNumber">): string {
+export function attestationPrUrl(record: Pick<AttestationView, "repo" | "prNumber">): string {
   return `https://github.com/${record.repo}/pull/${record.prNumber}`;
 }
