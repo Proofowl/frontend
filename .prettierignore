@@ -1,0 +1,10 @@
+.next/
+out/
+dist/
+coverage/
+node_modules/
+package-lock.json
+next-env.d.ts
+
+# Prior deliverable — hand-wrapped prose, not app code.
+docs/investigation/
