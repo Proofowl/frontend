@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch: {}
+
+# Structure mirrors proofowl-backend/.github/workflows/ci.yml: one job,
+# one concern per step, actions pinned to major tags (full SHA pinning is
+# a tracked hardening task there too), setup-node doing the dependency
+# caching. The contract SDK is a local `file:` dependency
+# (../proofowl-contracts/sdk/typescript), so CI reconstructs the sibling
+# layout by checking that repo out next to this one and building its SDK
+# before `npm ci` here resolves the link.
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout proofowl-frontend
+        uses: actions/checkout@v4
+        with:
+          path: proofowl-frontend
+
+      # A private-repo checkout needs a token with read access to
+      # Proofowl/proofowl-contracts. github.token works when both repos
+      # are in the same org and Actions is permitted; otherwise set
+      # secrets.CONTRACTS_REPO_TOKEN.
+      - name: Checkout proofowl-contracts (for the SDK)
+        uses: actions/checkout@v4
+        with:
+          repository: Proofowl/proofowl-contracts
+          path: proofowl-contracts
+          ref: main
+          token: ${{ secrets.CONTRACTS_REPO_TOKEN || github.token }}
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          # Same Node as proofowl-backend / proofowl-contracts' sdk job.
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: |
+            proofowl-frontend/package-lock.json
+            proofowl-contracts/sdk/typescript/package-lock.json
+
+      - name: Build the contract SDK
+        working-directory: proofowl-contracts/sdk/typescript
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+
+      - name: Install deps (locked)
+        working-directory: proofowl-frontend
+        run: npm ci --no-audit --no-fund
+
+      - name: Format check
+        working-directory: proofowl-frontend
+        run: npm run format:check
+
+      - name: Lint
+        working-directory: proofowl-frontend
+        run: npm run lint
+
+      - name: Type-check
+        working-directory: proofowl-frontend
+        run: npm run typecheck
+
+      - name: Unit tests
+        working-directory: proofowl-frontend
+        run: npm test
+
+      - name: Build
+        working-directory: proofowl-frontend
+        run: npm run build
