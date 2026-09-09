@@ -26,6 +26,18 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
       "@typescript-eslint/explicit-function-return-type": "off",
+      // This is a read-only app. It must never call a wallet signing
+      // method. Ban the identifiers project-wide so a signing flow
+      // cannot be added without also removing this rule on purpose.
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector:
+            "MemberExpression[property.name=/^(signTransaction|signAuthEntry|signMessage|signAndSubmitTransaction)$/]",
+          message:
+            "This repo is read-only: wallet signing methods must never be called. See src/lib/wallet/connect.ts.",
+        },
+      ],
     },
   },
 );

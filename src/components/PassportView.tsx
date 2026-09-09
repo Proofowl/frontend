@@ -10,6 +10,7 @@ import { Address } from "@/components/Address";
 import { Callout } from "@/components/Callout";
 import { EmptyState } from "@/components/EmptyState";
 import { AttestationHistory } from "@/components/AttestationHistory";
+import { ConnectWalletButton } from "@/components/ConnectWalletButton";
 
 type State =
   | { phase: "loading" }
@@ -58,6 +59,12 @@ export function PassportView({ wallet }: { wallet: string }) {
       <header className="stack-sm">
         <p className="label">Passport</p>
         <Address value={wallet} full />
+        <details className="faint" style={{ fontSize: "0.85rem" }}>
+          <summary>Not this wallet?</summary>
+          <div style={{ marginTop: "0.6rem" }}>
+            <ConnectWalletButton variant="ghost" label="View my own passport" />
+          </div>
+        </details>
       </header>
 
       {state.phase === "loading" ? (

@@ -18,7 +18,13 @@
  *  - rpc / passphrase : docs/testnet/phase2-v0.3-alpha.md "Network target"
  */
 
-import { MAINNET_PASSPHRASE, type ProofOwlContractConfig } from "@proofowl/contract-sdk";
+// Type only — erased at build time. Importing a VALUE from
+// @proofowl/contract-sdk here would pull the whole SDK barrel
+// (@stellar/stellar-sdk included) into every module that reads config.
+import type { ProofOwlContractConfig } from "@proofowl/contract-sdk";
+
+/** Stellar mainnet passphrase — inlined so this module has no SDK value import. */
+const MAINNET_PASSPHRASE = "Public Global Stellar Network ; September 2015";
 
 /** v0.3 (crate `0.3.0`) testnet instance. "Disposable; may be replaced." */
 export const DEFAULT_CONTRACT_ID = "CAIDTSVPQICTA2VLE6BSQYHEELHGPZWQDYWKSDBRW4LYPZH6Q44UTAOA";

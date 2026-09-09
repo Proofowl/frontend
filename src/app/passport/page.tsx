@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { PassportSearch } from "@/components/PassportSearch";
+import { ConnectWalletButton } from "@/components/ConnectWalletButton";
 
 export const metadata: Metadata = {
   title: "Passport lookup",
@@ -28,6 +29,15 @@ export default async function PassportSearchPage({
 
       <div className="card">
         <PassportSearch initialQuery={typeof q === "string" ? q : ""} />
+      </div>
+
+      <div className="card card--sunken stack-sm">
+        <p className="label">Or view your own</p>
+        <p className="muted">
+          Connect a wallet to open its passport. This reads your public address and nothing else —
+          it never asks you to sign.
+        </p>
+        <ConnectWalletButton variant="ghost" />
       </div>
     </div>
   );
