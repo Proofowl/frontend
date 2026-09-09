@@ -42,13 +42,19 @@ describe("resolveGitHubUser — found", () => {
   });
 
   it("absorbs @handle and github.com/handle forms", async () => {
-    const fetchImpl = vi.fn(async () => jsonResponse(200, { id: 1, login: "torvalds" }));
+    const seen: string[] = [];
+    const fetchImpl = vi.fn((url: string | URL) => {
+      seen.push(String(url));
+      return Promise.resolve(jsonResponse(200, { id: 1, login: "torvalds" }));
+    });
     for (const input of ["@torvalds", "github.com/torvalds", "https://github.com/torvalds/"]) {
       await resolveGitHubUser(input, fetchImpl as unknown as typeof fetch);
     }
-    for (const call of fetchImpl.mock.calls) {
-      expect(call[0]).toBe("https://api.github.com/users/torvalds");
-    }
+    expect(seen).toEqual([
+      "https://api.github.com/users/torvalds",
+      "https://api.github.com/users/torvalds",
+      "https://api.github.com/users/torvalds",
+    ]);
   });
 });
 
