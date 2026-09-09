@@ -1,6 +1,29 @@
+# dependencies
 node_modules/
+
+# next.js
+/.next/
+/out/
+next-env.d.ts
+
+# production
+/build
 dist/
+
+# test / coverage
+/coverage
+/test-results
+
+# misc
 .DS_Store
 *.local
+*.tsbuildinfo
+
+# env — never commit real values; .env.example is tracked
 .env
 .env.*
+!.env.example
+
+# editor
+.vscode/
+.idea/
