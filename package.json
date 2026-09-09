@@ -25,7 +25,7 @@
   "dependencies": {
     "@creit.tech/stellar-wallets-kit": "^2.6.0",
     "@noble/hashes": "^1.7.1",
-    "@proofowl/contract-sdk": "file:../proofowl-contracts/sdk/typescript",
+    "@proofowl/contract-sdk": "^0.3.0",
     "@stellar/stellar-sdk": "^16.0.1",
     "buffer": "^6.0.3",
     "next": "^15.5.0",
