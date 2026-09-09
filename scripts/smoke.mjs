@@ -134,7 +134,9 @@ try {
     failed = true;
     console.error(`smoke: FAIL — expected reputation score ${EXPECTED_SCORE}, got ${score}`);
   } else {
-    console.log("smoke: PASS — live browser read via the npm-installed SDK returned the expected value.");
+    console.log(
+      "smoke: PASS — live browser read via the npm-installed SDK returned the expected value.",
+    );
   }
   if (consoleErrors.length) {
     console.error("smoke: page errors:\n" + consoleErrors.join("\n"));
