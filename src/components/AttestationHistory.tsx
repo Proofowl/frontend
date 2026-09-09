@@ -6,7 +6,7 @@ import {
   attestationPrUrl,
   fetchAttestationPage,
   MAX_PAGE_SIZE,
-  type AttestationRecord,
+  type AttestationView,
 } from "@/lib/chain/passport";
 import { verifyAttestationPrHash } from "@/lib/hashing/identifiers";
 import {
@@ -20,7 +20,7 @@ import { Callout } from "@/components/Callout";
 type State =
   | { phase: "loading" }
   | { phase: "error"; message: string }
-  | { phase: "ready"; records: AttestationRecord[]; nextCursor: number | null };
+  | { phase: "ready"; records: AttestationView[]; nextCursor: number | null };
 
 export function AttestationHistory({ wallet, total }: { wallet: string; total: number }) {
   const [state, setState] = useState<State>({ phase: "loading" });
@@ -79,9 +79,8 @@ export function AttestationHistory({ wallet, total }: { wallet: string; total: n
 
       {state.phase === "error" ? (
         <Callout variant="danger" title="Could not read the attestation history">
-          {state.message}. History reads go through the documented ScVal decode shim (the
-          @stellar/stellar-sdk 16.x struct-decoder bug); a transient RPC failure looks the same —
-          try again.
+          {state.message}. This is a read-only simulation against the configured Soroban RPC — most
+          often a transient RPC error; try again.
         </Callout>
       ) : null}
 
@@ -109,7 +108,7 @@ export function AttestationHistory({ wallet, total }: { wallet: string; total: n
   );
 }
 
-function AttestationRow({ record }: { record: AttestationRecord }) {
+function AttestationRow({ record }: { record: AttestationView }) {
   let verified: boolean | null = null;
   try {
     verified = verifyAttestationPrHash(record.repo, record.prNumber, record.prHashHex);
