@@ -18,13 +18,13 @@ backend-service identity).
 
 ## Step 0 — a real merged GitHub PR (the fixture)
 
-| Artifact | Value |
-|---|---|
-| Fixture issue | [`Proofowl/backend#4`](https://github.com/Proofowl/backend/issues/4) — created `2026-09-08T23:13:31Z` |
-| `wave` label applied to #4 | `2026-09-08T23:13:33Z` (timeline `labeled` event, actor `maztah1`) |
-| Fixture PR | [`Proofowl/backend#5`](https://github.com/Proofowl/backend/pull/5) — opened `2026-09-08T23:15:28Z`, body contains `Closes #4` |
-| PR merged | `2026-09-08T23:16:24Z`, by `maztah1`, merge commit `10341d54…` |
-| Issue #4 auto-closed | `2026-09-08T23:16:28Z` |
+| Artifact                   | Value                                                                                                                         |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| Fixture issue              | [`Proofowl/backend#4`](https://github.com/Proofowl/backend/issues/4) — created `2026-09-08T23:13:31Z`                         |
+| `wave` label applied to #4 | `2026-09-08T23:13:33Z` (timeline `labeled` event, actor `maztah1`)                                                            |
+| Fixture PR                 | [`Proofowl/backend#5`](https://github.com/Proofowl/backend/pull/5) — opened `2026-09-08T23:15:28Z`, body contains `Closes #4` |
+| PR merged                  | `2026-09-08T23:16:24Z`, by `maztah1`, merge commit `10341d54…`                                                                |
+| Issue #4 auto-closed       | `2026-09-08T23:16:28Z`                                                                                                        |
 
 Order matters for one of the checks: the Wave label was applied
 **before** the PR was opened and merged.
@@ -33,16 +33,16 @@ Order matters for one of the checks: the Wave label was applied
 
 The account that both opened and merged the PR:
 
-| Field | Value |
-|---|---|
-| GitHub login | `maztah1` |
-| GitHub numeric user id | `267481210` |
-| Canonical string (`identifier-spec-v1` §1.2) | `proofowl:github-user:v1:267481210` |
-| `github_id_hash` (SHA-256, lowercase hex) | `6054b7be2332bad64108b27f181cfc8dfcb15cc0106de5671bd9519c2e071a51` |
+| Field                                        | Value                                                              |
+| -------------------------------------------- | ------------------------------------------------------------------ |
+| GitHub login                                 | `maztah1`                                                          |
+| GitHub numeric user id                       | `267481210`                                                        |
+| Canonical string (`identifier-spec-v1` §1.2) | `proofowl:github-user:v1:267481210`                                |
+| `github_id_hash` (SHA-256, lowercase hex)    | `6054b7be2332bad64108b27f181cfc8dfcb15cc0106de5671bd9519c2e071a51` |
 
 The id is not secret; anyone can recompute the hash. It was produced by
 the backend's own `hashGitHubUserIdV1Hex` and cross-checked against a
-raw `sha256`. This frontend's `/passport` search does the *same*
+raw `sha256`. This frontend's `/passport` search does the _same_
 computation client-side when you look someone up by handle.
 
 ## Step 2 — live discovery + verification (0 transactions)
@@ -57,14 +57,14 @@ candidate = { owner: "proofowl", repo: "backend", issueNumber: 4, prNumber: 5 }
 
 `verifyContribution` — real result, all reads live from GitHub:
 
-| # | check | status | detail |
-|---|---|---|---|
-| a | `repo_in_approved_orgs` | **pass** | `confidence: "manually-asserted-allowlist"` — `proofowl/backend` is on the operator allowlist; the live Drips source was `indeterminate` (no public JSON endpoint). |
-| b | `issue_has_wave_label` | **pass** | issue #4 carries `wave` |
-| c | `wave_label_predates_pr_merge` | **pass** | label `23:13:33Z` < merge `23:16:24Z` (`deltaSeconds: 171`) |
-| d | `pr_closes_issue` | **pass** | `closingIssueNumbers: [4]` |
-| e | `pr_is_merged` | **pass** | `merged_at 2026-09-08T23:16:24Z` |
-| f | `flags.selfMerge` | **flagged `true`** | `maztah1` (id `267481210`) authored *and* merged PR #5 |
+| #   | check                          | status             | detail                                                                                                                                                              |
+| --- | ------------------------------ | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| a   | `repo_in_approved_orgs`        | **pass**           | `confidence: "manually-asserted-allowlist"` — `proofowl/backend` is on the operator allowlist; the live Drips source was `indeterminate` (no public JSON endpoint). |
+| b   | `issue_has_wave_label`         | **pass**           | issue #4 carries `wave`                                                                                                                                             |
+| c   | `wave_label_predates_pr_merge` | **pass**           | label `23:13:33Z` < merge `23:16:24Z` (`deltaSeconds: 171`)                                                                                                         |
+| d   | `pr_closes_issue`              | **pass**           | `closingIssueNumbers: [4]`                                                                                                                                          |
+| e   | `pr_is_merged`                 | **pass**           | `merged_at 2026-09-08T23:16:24Z`                                                                                                                                    |
+| f   | `flags.selfMerge`              | **flagged `true`** | `maztah1` (id `267481210`) authored _and_ merged PR #5                                                                                                              |
 
 `attestable: true`. The self-merge flag fired `true` — its **first live
 observation in the wild** — and did **not** block attestation: it is a
@@ -95,14 +95,14 @@ realSubmissionAttempts: 0
 Signed by the synthetic wallet **and** the attestor. Network re-verified
 via `getNetwork` and `get_attestor()` re-read live before sending.
 
-| Field | Value |
-|---|---|
-| Transaction hash | `fea4a80426fa9b568d7d1f198eb0f10ee1847d1cb647ac1c1e7da84151103e30` |
-| Horizon `successful` | `true` |
-| Ledger | `4577301` |
-| `created_at` | `2026-09-08T23:28:12Z` |
-| `get_wallet_for_github(6054b7be…)` before | `null` |
-| `get_wallet_for_github(6054b7be…)` after | `GAXZZJW7Y4GYRG32MKSAU3YMHQ4PZRHDVDE53DNLNBMK4O4NXLHTPWER` |
+| Field                                     | Value                                                              |
+| ----------------------------------------- | ------------------------------------------------------------------ |
+| Transaction hash                          | `fea4a80426fa9b568d7d1f198eb0f10ee1847d1cb647ac1c1e7da84151103e30` |
+| Horizon `successful`                      | `true`                                                             |
+| Ledger                                    | `4577301`                                                          |
+| `created_at`                              | `2026-09-08T23:28:12Z`                                             |
+| `get_wallet_for_github(6054b7be…)` before | `null`                                                             |
+| `get_wallet_for_github(6054b7be…)` after  | `GAXZZJW7Y4GYRG32MKSAU3YMHQ4PZRHDVDE53DNLNBMK4O4NXLHTPWER`         |
 
 This is the step no repo ships a UI for. In the demo it was done via the
 CLI / SDK `prepareLinkGithub` path with both keys available.
@@ -114,13 +114,13 @@ queued (no retry, as designed). Discovery re-found the candidate; the
 wallet was now linked and the PR not yet attested, so `submit_attestation`
 was sent (signed by the attestor only):
 
-| Field | Value |
-|---|---|
-| Transaction hash | `0e2a7be567fd8b49567b60293b8b9e520cdf25e181d0bbe246ce604a8324fa65` |
-| Horizon `successful` | `true` |
-| Ledger | `4577318` |
-| `created_at` | `2026-09-08T23:29:37Z` |
-| `source_account` | `GAVHDK6V2LBGBCBWIZXEHDJAW6ZZKPCKLDANURKJZU4NFDCAV2BYFXEF` (attestor) |
+| Field                | Value                                                                 |
+| -------------------- | --------------------------------------------------------------------- |
+| Transaction hash     | `0e2a7be567fd8b49567b60293b8b9e520cdf25e181d0bbe246ce604a8324fa65`    |
+| Horizon `successful` | `true`                                                                |
+| Ledger               | `4577318`                                                             |
+| `created_at`         | `2026-09-08T23:29:37Z`                                                |
+| `source_account`     | `GAVHDK6V2LBGBCBWIZXEHDJAW6ZZKPCKLDANURKJZU4NFDCAV2BYFXEF` (attestor) |
 
 ## Step 6 — the on-chain record (read back)
 

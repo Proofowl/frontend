@@ -18,7 +18,7 @@ identity links** and **per-contribution attestations**, plus a running
 reputation score and permanent global de-duplication of already-credited
 pull requests. It has no network access, so it cannot verify GitHub
 itself — it enforces authorization procedure and stores verified facts;
-everything about *proving* GitHub ownership happens off-chain (the
+everything about _proving_ GitHub ownership happens off-chain (the
 backend) and is vouched for on-chain by the attestor co-signature.
 
 The contract crate is at version **`0.3.0`**. `src/lib.rs` is the real
@@ -37,7 +37,7 @@ description of both.
 `submit_attestation` takes a `github_id_hash`, **not** a wallet address.
 The contract resolves the credited wallet itself, via the on-chain link
 that `link_github` created. Consequence: a compromised or careless
-attestor key can forge *that* a contribution happened or misreport its
+attestor key can forge _that_ a contribution happened or misreport its
 complexity, but it **cannot** redirect credit to a wallet the GitHub
 identity has not itself linked. The trade-off: you cannot attest for a
 contributor who has not linked a wallet yet — that is what the backend's
@@ -49,11 +49,11 @@ An earlier design let a wallet link itself to any `github_id_hash` with
 a single signature. That let anyone squat `hash("torvalds")` and have
 every future attestation for that identity resolve to the squatter's
 wallet. `link_github` and `unlink_github` are now **two-party**:
-`wallet.require_auth()` *and* `attestor.require_auth()`, with the
+`wallet.require_auth()` _and_ `attestor.require_auth()`, with the
 caller-supplied attestor checked against the stored one. The attestor
 co-signs only after its own off-chain GitHub OAuth / challenge flow. The
 cost: linking now needs the contributor and the backend to co-sign one
-transaction. Recovery from a *lost* wallet key is deliberately out of
+transaction. Recovery from a _lost_ wallet key is deliberately out of
 scope — an attestor override would reintroduce exactly the redirect
 power ADR 0002 removes.
 
@@ -63,7 +63,7 @@ There is **no `init` function**. `__constructor(admin, attestor)` runs
 inside the `CreateContract` host operation, in the same transaction that
 creates the instance, and calls `admin.require_auth()`. This closes an
 initialization-takeover window: a front-runner who deploys their own
-copy only gets a *different* contract id. Configuration is passed as
+copy only gets a _different_ contract id. Configuration is passed as
 `stellar contract deploy … -- --admin <A> --attestor <B>`; there is no
 follow-up call.
 
@@ -89,13 +89,13 @@ re-fold. The unbounded `get_attestations` and `bump_wallet_ttl` are
 Property-based fuzz testing surfaced a mirror-image of the ADR 0002
 scenario: because storage is keyed **purely by wallet address**, a
 wallet that links identity A, earns points, unlinks, then links identity
-B shows its *full* history under B too. Options weighed: reset on unlink
+B shows its _full_ history under B too. Options weighed: reset on unlink
 (rejected — punishes legitimate recovery), admin-gated relink (rejected
 — reverses self-sovereignty), or **tag each attestation with the
 identity active when it was recorded** (accepted). `Attestation` and the
 `AttestationRecorded` event gained a `github_id_hash` field.
 `get_reputation_score` is **unchanged** — still a full aggregate across
-every identity. The tag lets a reader *break down* the aggregate; it
+every identity. The tag lets a reader _break down_ the aggregate; it
 does not stop the full history from being readable under a new identity.
 This is a **breaking storage-schema change**, and is why the crate went
 `0.2.0` → `0.3.0`.
@@ -108,11 +108,11 @@ This is a **breaking storage-schema change**, and is why the crate went
 accounts are disposable and friendbot-funded. Three instances coexist
 on testnet — nothing was torn down:
 
-| Version | Contract ID | Source | Deployed | Notes |
-|---|---|---|---|---|
+| Version                                            | Contract ID                                                | Source    | Deployed                                 | Notes                                                                                                                                                                                                      |
+| -------------------------------------------------- | ---------------------------------------------------------- | --------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **v0.3 (crate `0.3.0`)** — current, matches `src/` | `CAIDTSVPQICTA2VLE6BSQYHEELHGPZWQDYWKSDBRW4LYPZH6Q44UTAOA` | `ab95af6` | 2026-09-07T12:36:42Z, ledger **4552203** | WASM SHA-256 `b407cca4…8ff11b4bd`, reproducible-build-verified and matched on-chain. Carries `Attestation.github_id_hash`. **"Disposable; may be replaced."** This is the instance all three repos target. |
-| v0.2 (crate `0.2.0`) — superseded | `CBNEX2CFAKMX2JH24EX2ZJOMKV6KQ5UE5NXAYCN2A2S72IVMFLNWIGC4` | `aa65426` | 2026-09-07 | Paginated storage, **no** `github_id_hash`. Still live, unedited, as history. |
-| v0.1 — superseded | `CCJ7DVU2XYVFNZMHN4VPCYSPJ7HW4RPI544XG5TG42ZX7TDSUIL3SKP6` | `d030908` | 2026-09-01 | Unbounded v0.1 ABI. Still live, unedited, as history. |
+| v0.2 (crate `0.2.0`) — superseded                  | `CBNEX2CFAKMX2JH24EX2ZJOMKV6KQ5UE5NXAYCN2A2S72IVMFLNWIGC4` | `aa65426` | 2026-09-07                               | Paginated storage, **no** `github_id_hash`. Still live, unedited, as history.                                                                                                                              |
+| v0.1 — superseded                                  | `CCJ7DVU2XYVFNZMHN4VPCYSPJ7HW4RPI544XG5TG42ZX7TDSUIL3SKP6` | `d030908` | 2026-09-01                               | Unbounded v0.1 ABI. Still live, unedited, as history.                                                                                                                                                      |
 
 Do not point a client at the two older instances — they speak older
 ABIs.
@@ -175,7 +175,7 @@ covered in [`sdk-and-integration.md`](./sdk-and-integration.md).
 
 ---
 
-## What the contract does *not* do
+## What the contract does _not_ do
 
 - No mainnet deployment; no upgrade path (immutability is accepted).
 - No `set_admin` — a lost admin key permanently freezes the attestor at

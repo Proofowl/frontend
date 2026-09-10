@@ -19,13 +19,13 @@ dependency.
 
 ## What it provides
 
-| Surface | What it is |
-|---|---|
-| `createReadClient(config)` | View-method client — `getReputationScore`, `getAttestationCount`, `getGithubForWallet`, `getWalletForGithub`, `getAdmin`, `getAttestor`, `getAttestation`, `getAttestationsPage`. Built with **no signer and no public key** — simulation only. |
-| `prepare*` helpers | `prepareLinkGithub`, `prepareUnlinkGithub`, `prepareSubmitAttestation`, `prepareBumpWalletCoreTtl`, `prepareBumpAttestationsTtlPage`, `prepareSetAttestor` — each returns an **unsigned** `AssembledTransaction`. The two-party ones report `needsSignatureFrom`. The SDK never signs or submits. |
-| Canonical hashing | `hashGitHubUserIdV1(Hex)`, `normalizeGitHubPullRequest`, `hashGitHubPullRequestV1(Hex)`, `verifyAttestationPrHash` — implementing `identifier-spec-v1` with pinned vectors. |
-| Error helpers | `parseProofOwlError`, `ProofOwlErrorCode`, `isSequenceOutOfRange`, `isPageStartOutOfRange`. |
-| Lower-level | `decodeReadResult`, `normalizeAttestation`, `RawAttestation`, `MAX_PAGE_SIZE` (50). |
+| Surface                    | What it is                                                                                                                                                                                                                                                                                        |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `createReadClient(config)` | View-method client — `getReputationScore`, `getAttestationCount`, `getGithubForWallet`, `getWalletForGithub`, `getAdmin`, `getAttestor`, `getAttestation`, `getAttestationsPage`. Built with **no signer and no public key** — simulation only.                                                   |
+| `prepare*` helpers         | `prepareLinkGithub`, `prepareUnlinkGithub`, `prepareSubmitAttestation`, `prepareBumpWalletCoreTtl`, `prepareBumpAttestationsTtlPage`, `prepareSetAttestor` — each returns an **unsigned** `AssembledTransaction`. The two-party ones report `needsSignatureFrom`. The SDK never signs or submits. |
+| Canonical hashing          | `hashGitHubUserIdV1(Hex)`, `normalizeGitHubPullRequest`, `hashGitHubPullRequestV1(Hex)`, `verifyAttestationPrHash` — implementing `identifier-spec-v1` with pinned vectors.                                                                                                                       |
+| Error helpers              | `parseProofOwlError`, `ProofOwlErrorCode`, `isSequenceOutOfRange`, `isPageStartOutOfRange`.                                                                                                                                                                                                       |
+| Lower-level                | `decodeReadResult`, `normalizeAttestation`, `RawAttestation`, `MAX_PAGE_SIZE` (50).                                                                                                                                                                                                               |
 
 ## How each repo uses it
 
@@ -112,11 +112,11 @@ SDK minor with the contract crate minor it now speaks" (ADR 0005).
 
 Once `0.3.0` was available on npm, both consumers converged:
 
-| Change | proofowl-frontend | proofowl-backend |
-|---|---|---|
-| Swap `file:` dep for the npm package `^0.3.0` | commit `32df8ff` | commit `6ef7b0a` |
-| Delete the ported `attestationDecode` shim + its test | commit `cb15e58` | commit `e8b643c` |
-| Drop the cross-repo checkout / SDK build from CI | commit `32695a1` | commit `ca1f93d` |
+| Change                                                           | proofowl-frontend            | proofowl-backend                        |
+| ---------------------------------------------------------------- | ---------------------------- | --------------------------------------- |
+| Swap `file:` dep for the npm package `^0.3.0`                    | commit `32df8ff`             | commit `6ef7b0a`                        |
+| Delete the ported `attestationDecode` shim + its test            | commit `cb15e58`             | commit `e8b643c`                        |
+| Drop the cross-repo checkout / SDK build from CI                 | commit `32695a1`             | commit `ca1f93d`                        |
 | Drop the sibling-checkout requirement from README / config prose | commits `7435b3b`, `a659256` | commits `bb70070`, `ed988ec`, `4cb71b7` |
 
 The frontend still needs its **browser** bundler shim for `node:crypto`

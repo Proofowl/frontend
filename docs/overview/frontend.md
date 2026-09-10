@@ -3,7 +3,7 @@
 This is the public, read-only web explorer for ProofOwl. Its own
 [`README.md`](../../README.md) is the authority on running and building
 it; this document places it in the three-repo picture and is explicit
-about what it deliberately does *not* do.
+about what it deliberately does _not_ do.
 
 Stack: Next.js 15 (App Router) + React 19 + TypeScript. Reads run
 **in the browser** against the live v0.3 testnet contract via
@@ -30,13 +30,13 @@ Attestation submission and the attestor key live in
 
 ## What ships in this version
 
-| Route | What it is |
-|---|---|
-| `/` | Landing / explainer — the problem, the solution, the trust boundaries. Substance drawn from the contracts README and `SECURITY.md`. |
-| `/passport` | Search by wallet address **or** GitHub handle. A handle is resolved to its numeric id via `api.github.com` (unauthenticated), then hashed client-side to a `github_id_hash` and looked up on-chain with `get_wallet_for_github`. Every distinct outcome — unknown handle, valid handle not linked, rate-limited, wallet is a bad strkey — is its own state with its own wording. |
-| `/passport/[wallet]` | Reputation score, attestation count, the currently-linked identity hash, and the full **paginated** attestation history (`get_attestations_page`, "load more" in pages of 50). Each row rebuilds the PR URL from the cleartext `repo` + `pr_number` and recomputes `pr_hash` client-side to show a "pr_hash verified" / "mismatch" badge. |
-| `/leaderboard` | An honest **"not available yet"** — no sample data standing in for a real one. Explains what a real leaderboard needs. |
-| `/link` | How the two-party linking flow works, in plain language, pointing at the CLI flow in the backend README and `contract-api-v2.md`. Shows the current on-chain attestor for reference, with the caveat that `get_attestor()` is authoritative. |
+| Route                | What it is                                                                                                                                                                                                                                                                                                                                                                       |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/`                  | Landing / explainer — the problem, the solution, the trust boundaries. Substance drawn from the contracts README and `SECURITY.md`.                                                                                                                                                                                                                                              |
+| `/passport`          | Search by wallet address **or** GitHub handle. A handle is resolved to its numeric id via `api.github.com` (unauthenticated), then hashed client-side to a `github_id_hash` and looked up on-chain with `get_wallet_for_github`. Every distinct outcome — unknown handle, valid handle not linked, rate-limited, wallet is a bad strkey — is its own state with its own wording. |
+| `/passport/[wallet]` | Reputation score, attestation count, the currently-linked identity hash, and the full **paginated** attestation history (`get_attestations_page`, "load more" in pages of 50). Each row rebuilds the PR URL from the cleartext `repo` + `pr_number` and recomputes `pr_hash` client-side to show a "pr_hash verified" / "mismatch" badge.                                        |
+| `/leaderboard`       | An honest **"not available yet"** — no sample data standing in for a real one. Explains what a real leaderboard needs.                                                                                                                                                                                                                                                           |
+| `/link`              | How the two-party linking flow works, in plain language, pointing at the CLI flow in the backend README and `contract-api-v2.md`. Shows the current on-chain attestor for reference, with the caveat that `get_attestor()` is authoritative.                                                                                                                                     |
 
 ### How it talks to the chain
 
@@ -71,12 +71,12 @@ gone.
 There is no button here that completes a `link_github`. Linking is a
 **two-party** contract call (ADR 0002): it needs the attestor's
 auth-entry co-signature, which only the backend can produce, and only
-*after* its own GitHub OAuth / challenge flow. This repo cannot sign
+_after_ its own GitHub OAuth / challenge flow. This repo cannot sign
 anything at all, and the backend has no OAuth flow yet. A button that
 silently failed would be worse than no button. The `/link` page explains
 the CLI flow instead.
 
-The investigation confirmed the *tooling* for an eventual interactive
+The investigation confirmed the _tooling_ for an eventual interactive
 flow is real: `@creit.tech/stellar-wallets-kit` (v2.6.0) exposes
 `signAuthEntry`, whose shape plugs into the SDK's
 `AssembledTransaction.signAuthEntries()` and the ProofOwl SDK's

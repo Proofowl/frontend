@@ -17,8 +17,8 @@ index you fetch it by. Spec: `contract-api-v2.md` → `Attestation`.
 ### attestor
 
 The single trusted key that co-signs `link_github` / `unlink_github` and
-is the sole caller of `submit_attestation`. Trusted to report *what*
-happened; by contract design it cannot choose *whose* wallet gets credit
+is the sole caller of `submit_attestation`. Trusted to report _what_
+happened; by contract design it cannot choose _whose_ wallet gets credit
 (ADR 0001). Rotatable via `set_attestor` (admin-only). On the v0.3
 testnet instance it is
 `GAVHDK6V2LBGBCBWIZXEHDJAW6ZZKPCKLDANURKJZU4NFDCAV2BYFXEF` (rotated
@@ -97,7 +97,7 @@ is the on-chain receipt of an off-chain GitHub ownership check.
 ### trust boundary
 
 The line the contract does not cross: it trusts the attestor key for
-*what happened*, never for *whose* wallet gets credit; GitHub ownership
+_what happened_, never for _whose_ wallet gets credit; GitHub ownership
 is established off-chain and vouched for on-chain by the co-signature.
 The contract is **not trustless**. Full statement: `SECURITY.md`,
 `docs/architecture.md` "Trust boundary in one line".

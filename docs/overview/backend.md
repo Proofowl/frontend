@@ -36,7 +36,7 @@ the deployed v0.3 registry. Its own README is blunt about what it is:
   `ApiDeps` type is `Pick<>`-narrowed so this is a compile-time
   guarantee, not a convention.
 - **No GitHub OAuth / challenge flow.** The submit path assumes the
-  contributor's wallet is *already* linked on-chain and short-circuits
+  contributor's wallet is _already_ linked on-chain and short-circuits
   to "needs queueing" when it is not. Nothing in this repo runs the
   wallet-linking OAuth flow ADR 0002 describes.
 - Submission and the pipeline are **testnet-only** and refuse any other
@@ -85,13 +85,13 @@ passes never stack. `SIGINT` / `SIGTERM` stop it cleanly.
 `{ status, detail, evidence }` — never one opaque boolean. `status` is
 `pass`, `fail`, or `indeterminate`.
 
-| id | checks |
-|---|---|
-| `repo_in_approved_orgs` | live Wave list first, then an operator-asserted allowlist fallback (see below) |
-| `issue_has_wave_label` | the resolved issue carries the Wave label |
-| `wave_label_predates_pr_merge` | the label's applied-at timestamp is before the PR's merge timestamp |
-| `pr_closes_issue` | the PR is linked to the issue via GitHub's own closing-issue mechanism (GraphQL `closingIssuesReferences`) |
-| `pr_is_merged` | `pull_request.merged === true`, not merely `closed` |
+| id                             | checks                                                                                                     |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| `repo_in_approved_orgs`        | live Wave list first, then an operator-asserted allowlist fallback (see below)                             |
+| `issue_has_wave_label`         | the resolved issue carries the Wave label                                                                  |
+| `wave_label_predates_pr_merge` | the label's applied-at timestamp is before the PR's merge timestamp                                        |
+| `pr_closes_issue`              | the PR is linked to the issue via GitHub's own closing-issue mechanism (GraphQL `closingIssuesReferences`) |
+| `pr_is_merged`                 | `pull_request.merged === true`, not merely `closed`                                                        |
 
 Plus `flags.selfMerge` — whether the PR's author and merger are the same
 account. This is a **flag, not a gating check**: `attestable` is true iff
@@ -136,9 +136,9 @@ Safeguards, enforced not just documented:
 - **Dry-run first, always** — every call is simulated before it can be
   sent; a contract rejection is classified from that simulation, before
   any signature or fee.
-- **Two hard pre-conditions, re-read live every call** — *not-linked*
+- **Two hard pre-conditions, re-read live every call** — _not-linked_
   (`get_wallet_for_github` returns `null` → `not-submittable`, that's
-  the queue's job) and *already-attested* (→ `already-attested`, no
+  the queue's job) and _already-attested_ (→ `already-attested`, no
   transaction assembled).
 - **The attestor secret is never logged** — not in a result, an error,
   or a log line; it is kept off the shared `AppConfig` object (only the
@@ -160,7 +160,7 @@ the canonical `githubIdHash` / `githubUserId` / `prHash` (unique) /
 `verificationJson`, `selfMergeFlagged`, a `status` string
 (`WAITING_FOR_WALLET_LINK` → `READY_TO_SUBMIT` / `ALREADY_ATTESTED` /
 `DISMISSED`), and audit timestamps. The README is explicit that this is
-the *only* persisted thing — **no leaderboard cache, no attestation
+the _only_ persisted thing — **no leaderboard cache, no attestation
 mirror, no REST-API tables.**
 
 ---
@@ -172,12 +172,12 @@ counts. Base path `/api`. Order per request: response cache (3 s) →
 per-IP rate limiter (60 req / IP / 60 s) → route. It has **no write
 capability at all**.
 
-| Method & path | Returns |
-|---|---|
-| `GET /api/reputation/:wallet` | `{ wallet, reputationScore, attestationCount }` |
+| Method & path                                  | Returns                                                                                                                                                                                                             |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /api/reputation/:wallet`                  | `{ wallet, reputationScore, attestationCount }`                                                                                                                                                                     |
 | `GET /api/attestations/:wallet?cursor=&limit=` | `{ wallet, pagination: { cursor, limit, count, nextCursor, maxPageSize: 50 }, attestations: [{ sequence, repo, prNumber, prHashHex, githubIdHashHex, issueId (decimal string), complexity, timestamp (number) }] }` |
-| `GET /api/wallet-for-github/:githubIdHash` | `{ githubIdHash, wallet \| null }` |
-| `GET /api/queue/status` | `{ counts: { …per status… }, total }` — **aggregate counts only** |
+| `GET /api/wallet-for-github/:githubIdHash`     | `{ githubIdHash, wallet \| null }`                                                                                                                                                                                  |
+| `GET /api/queue/status`                        | `{ counts: { …per status… }, total }` — **aggregate counts only**                                                                                                                                                   |
 
 Conventions: malformed input → 400 before any RPC; a syntactically valid
 but never-seen wallet/hash is **not** an error (`reputationScore: 0`,
